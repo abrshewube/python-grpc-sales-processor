@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  grpc-server:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - "50051:50051"
+    volumes:
+      - ./backend/storage/processed:/app/storage/processed
+    environment:
+      - GRPC_PORT=50051
+      - OUTPUT_DIR=storage/processed
+    container_name: grpc-server
+
+  http-proxy:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.proxy
+    ports:
+      - "8000:8000"
+    depends_on:
+      - grpc-server
+    environment:
+      - GRPC_SERVER=grpc-server:50051
+      - HTTP_PORT=8000
+    container_name: http-proxy
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - http-proxy
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    container_name: frontend
+
