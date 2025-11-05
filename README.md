@@ -45,6 +45,29 @@ docker-compose up --build
 # HTTP proxy at http://localhost:8000
 ```
 
+**To run in background:**
+```bash
+docker-compose up -d
+```
+
+**To stop services:**
+```bash
+docker-compose down
+```
+
+### Running Tests in Docker
+
+```bash
+# Run all unit tests
+docker-compose run --rm grpc-server python -m unittest tests.test_csv_processor -v
+
+# Or with pytest
+docker-compose run --rm grpc-server pytest tests/ -v
+
+# Or use the test service
+docker-compose --profile test run --rm test
+```
+
 ### Manual Setup
 
 #### Backend
@@ -171,13 +194,26 @@ Electronics,3
 
 ## Testing
 
-Run backend unit tests:
+### Docker (Recommended)
+
+```bash
+# Run all unit tests
+docker-compose run --rm grpc-server python -m unittest tests.test_csv_processor -v
+
+# Or with pytest
+docker-compose run --rm grpc-server pytest tests/ -v
+
+# Or use the test service
+docker-compose --profile test run --rm test
+```
+
+### Local Development
 
 ```bash
 cd backend
 python -m pytest tests/
 # or
-python -m unittest tests.test_csv_processor
+python -m unittest tests.test_csv_processor -v
 ```
 
 ## Configuration

@@ -39,3 +39,17 @@ services:
       - NEXT_PUBLIC_API_URL=http://localhost:8000
     container_name: frontend
 
+  # Test service - runs unit tests
+  test:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+    command: python -m unittest tests.test_csv_processor -v
+    container_name: test-runner
+    profiles:
+      - test
+
