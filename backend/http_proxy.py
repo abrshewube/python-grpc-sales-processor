@@ -145,7 +145,33 @@ def status(job_id):
 @app.route('/processed/<filename>')
 def download_file(filename):
     """Serve processed CSV files."""
-    return send_from_directory(PROCESSED_DIR, filename)
+    from flask import abort
+    
+    # Ensure filename ends with .csv for security
+    if not filename.endswith('.csv'):
+        abort(400, 'Invalid file type')
+    
+    # Resolve absolute path
+    file_path = os.path.join(PROCESSED_DIR, filename)
+    abs_file_path = os.path.abspath(file_path)
+    
+    # Security check: ensure file is within PROCESSED_DIR
+    abs_processed_dir = os.path.abspath(PROCESSED_DIR)
+    if not abs_file_path.startswith(abs_processed_dir):
+        abort(403, 'Access denied')
+    
+    # Check if file exists
+    if not os.path.exists(abs_file_path):
+        app.logger.error(f"File not found: {abs_file_path} (PROCESSED_DIR: {PROCESSED_DIR})")
+        abort(404, 'File not found')
+    
+    # Return file with proper content type
+    return send_from_directory(
+        PROCESSED_DIR, 
+        filename,
+        as_attachment=True,
+        mimetype='text/csv'
+    )
 
 
 if __name__ == '__main__':

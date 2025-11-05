@@ -20,11 +20,14 @@ services:
       dockerfile: backend/Dockerfile.proxy
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend/storage/processed:/app/storage/processed
     depends_on:
       - grpc-server
     environment:
       - GRPC_SERVER=grpc-server:50051
       - HTTP_PORT=8000
+      - PROCESSED_DIR=storage/processed
     container_name: http-proxy
 
   frontend:

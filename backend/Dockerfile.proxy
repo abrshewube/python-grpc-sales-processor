@@ -15,10 +15,14 @@ RUN python -m grpc_tools.protoc -I proto --python_out=. --grpc_python_out=. prot
 # copy rest of application code
 COPY backend/ ./
 
+# create storage directory
+RUN mkdir -p storage/processed
+
 EXPOSE 8000
 
 ENV GRPC_SERVER=grpc-server:50051
 ENV HTTP_PORT=8000
+ENV PROCESSED_DIR=storage/processed
 
 CMD ["python", "http_proxy.py"]
 

@@ -56,6 +56,13 @@ export default function Uploader() {
     return `${(ms / 1000).toFixed(2)}s`;
   };
 
+  const getFullDownloadUrl = (url: string | null): string => {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    return `${apiUrl}${url}`;
+  };
+
   return (
     <div className="bg-white rounded-xl shadow-xl overflow-hidden transform transition-all duration-300">
       <div className="p-6 sm:p-8">
@@ -223,7 +230,7 @@ export default function Uploader() {
                 {/* Download Link */}
                 <div className="flex flex-col sm:flex-row gap-2 mb-3">
                   <a
-                    href={downloadUrl}
+                    href={getFullDownloadUrl(downloadUrl)}
                     download
                     className="inline-flex items-center justify-center px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 text-sm"
                   >

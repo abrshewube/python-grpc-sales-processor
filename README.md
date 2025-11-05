@@ -2,30 +2,41 @@
 
 A gRPC-based backend with React frontend for processing CSV files and aggregating sales by department.
 
-## Quick Start
+## Quick Start with Docker
 
-### Using Docker Compose (Recommended)
+### Prerequisites
+
+- Docker Desktop installed and running
+- Docker Compose installed
+
+### Run the Application
 
 ```bash
 # Build and start all services
 docker-compose up --build
 
-# Access frontend at http://localhost:3000
-# gRPC server at localhost:50051
-# HTTP proxy at http://localhost:8000
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+# gRPC Server: localhost:50051
 ```
 
-**To run in background:**
+**Run in background:**
 ```bash
 docker-compose up -d
 ```
 
-**To stop services:**
+**Stop services:**
 ```bash
 docker-compose down
 ```
 
-### Running Tests in Docker
+**View logs:**
+```bash
+docker-compose logs -f
+```
+
+### Run Tests
 
 ```bash
 # Run all unit tests
@@ -33,85 +44,9 @@ docker-compose run --rm grpc-server python -m unittest tests.test_csv_processor 
 
 # Or with pytest
 docker-compose run --rm grpc-server pytest tests/ -v
-
-# Or use the test service
-docker-compose --profile test run --rm test
 ```
 
-### Manual Setup
-
-#### Backend
-
-1. Install dependencies:
-```bash
-cd backend
-pip install -r requirements.txt
-```
-
-2. Generate Python code from proto:
-```bash
-python -m grpc_tools.protoc -I proto --python_out=. --grpc_python_out=. proto/sales.proto
-```
-
-3. Start gRPC server:
-```bash
-python server.py
-```
-
-4. Start HTTP proxy (in another terminal):
-```bash
-python http_proxy.py
-```
-
-#### Frontend
-
-1. Install dependencies:
-```bash
-cd frontend
-npm install
-```
-
-2. Run development server:
-```bash
-npm run dev
-```
-
-3. Open http://localhost:3000
-
-## How It Works
-
-### Architecture
-
-The system uses a three-tier architecture:
-
-1. **Frontend (Next.js)**: React-based UI for file upload
-2. **HTTP Proxy (Flask)**: Thin HTTP server that forwards requests to gRPC
-3. **gRPC Server (Python)**: Processes CSV files using streaming I/O
-
-### Processing Flow
-
-1. User uploads CSV file via frontend
-2. Frontend sends file to HTTP proxy via multipart/form-data
-3. HTTP proxy streams file chunks to gRPC server
-4. gRPC server processes CSV line-by-line:
-   - Reads CSV using `csv.reader` (streaming)
-   - Aggregates sales by department
-   - Writes output CSV to `storage/processed/`
-5. Returns job ID and download URL
-
-### Algorithm & Complexity
-
-**Time Complexity:** O(n)
-- Single pass through CSV file
-- Dictionary operations are O(1) average case
-- Where n = number of rows
-
-**Space Complexity:** O(d)
-- Only stores department counts in memory
-- CSV file is processed as stream (not fully loaded)
-- Where d = number of unique departments
-
-### CSV Format
+## CSV Format
 
 **Input Format:**
 ```csv
@@ -127,51 +62,57 @@ Clothing,75
 Electronics,150
 ```
 
+## Usage
+
+1. Open http://localhost:3000 in your browser
+2. Upload a CSV file with format: `Department Name, Date, Number of Sales`
+3. Wait for processing to complete
+4. Download the aggregated results
+
 ## API Endpoints
 
-### HTTP Proxy Endpoints
+- `POST /api/upload` - Upload CSV file
+- `GET /api/status/<job_id>` - Get job status
+- `GET /processed/<filename>` - Download processed CSV file
 
-- `POST /api/upload`: Upload CSV file (multipart/form-data)
-- `GET /api/status/<job_id>`: Get job status
-- `GET /processed/<filename>`: Download processed CSV file
+## Local Development (Without Docker)
 
-## Testing
-
-### Docker (Recommended)
-
-```bash
-# Run all unit tests
-docker-compose run --rm grpc-server python -m unittest tests.test_csv_processor -v
-
-# Or with pytest
-docker-compose run --rm grpc-server pytest tests/ -v
-```
-
-### Local Development
+### Backend
 
 ```bash
 cd backend
-python -m pytest tests/
-# or
-python -m unittest tests.test_csv_processor -v
+pip install -r requirements.txt
+python -m grpc_tools.protoc -I proto --python_out=. --grpc_python_out=. proto/sales.proto
+python server.py  # Terminal 1
+python http_proxy.py  # Terminal 2
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
 ## Configuration
 
 ### Environment Variables
 
-**Backend:**
 - `GRPC_PORT`: gRPC server port (default: 50051)
-- `OUTPUT_DIR`: Output directory for processed files (default: storage/processed)
-
-**HTTP Proxy:**
+- `OUTPUT_DIR`: Output directory (default: storage/processed)
 - `GRPC_SERVER`: gRPC server address (default: localhost:50051)
 - `HTTP_PORT`: HTTP proxy port (default: 8000)
+- `NEXT_PUBLIC_API_URL`: Frontend API URL (default: http://localhost:8000)
 
-## Development Notes
+## Project Structure
 
-- Proto files need to be regenerated after changes: `python -m grpc_tools.protoc -I proto --python_out=. --grpc_python_out=. proto/sales.proto`
-- Make sure `storage/processed/` directory exists before running server
+```
+├── backend/          # Python gRPC backend
+├── frontend/         # Next.js React frontend
+├── docker-compose.yml
+└── README.md
+```
 
 ## License
 
