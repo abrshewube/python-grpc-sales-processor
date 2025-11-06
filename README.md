@@ -112,7 +112,7 @@ npm run dev
 - `OUTPUT_DIR`: Output directory (default: storage/processed)
 - `GRPC_SERVER`: gRPC server address (default: localhost:50051)
 - `HTTP_PORT`: HTTP proxy port (default: 8000)
-- `NEXT_PUBLIC_API_URL`: Frontend API URL (default: http://localhost:8000)
+- `NEXT_PUBLIC_API_URL`: Next.js frontend environment variable - backend API base URL used by the frontend to make HTTP requests (default: http://localhost:8000)
 
 ## Project Structure
 
@@ -122,7 +122,3 @@ npm run dev
 ├── docker-compose.yml
 └── README.md
 ```
-
-## License
-
-MIT
