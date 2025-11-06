@@ -2,6 +2,15 @@
 
 A gRPC-based backend with React frontend for processing CSV files and aggregating sales by department.
 
+## Getting Started
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/abrshewube/python-grpc-sales-processor.git
+cd python-grpc-sales-processor
+```
+
 ## Quick Start with Docker
 
 ### Prerequisites
