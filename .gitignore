@@ -39,6 +39,3 @@ Thumbs.db
 # Proto generated files (optional - can be regenerated)
 # backend/proto/*_pb2.py
 # backend/proto/*_pb2_grpc.py
-branch_structure.json
-temp_auto_push.bat
-temp_interactive_push.bat
